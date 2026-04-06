@@ -14,4 +14,10 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LinkedIn.Application\LinkedIn.Application.csproj" />
+    <ProjectReference Include="..\LinkedIn.Domain\LinkedIn.Domain.csproj" />
+    <ProjectReference Include="..\LinkedIn.Infrastructure\LinkedIn.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
