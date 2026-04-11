@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
@@ -18,6 +19,11 @@
   <ItemGroup>
     <ProjectReference Include="..\LinkedIn.Application\LinkedIn.Application.csproj" />
     <ProjectReference Include="..\LinkedIn.Domain\LinkedIn.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
