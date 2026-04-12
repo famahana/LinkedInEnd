@@ -43,7 +43,7 @@ namespace LinkedIn.Infrastructure.Repositories
             return user.Email;
         }
 
-        public async Task<string> DeleteUserByGuidAsync(Guid id)
+        public async Task<string> DeleteUserByIdAsync(Guid id)
         {
             var user = await _linkedInDbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)

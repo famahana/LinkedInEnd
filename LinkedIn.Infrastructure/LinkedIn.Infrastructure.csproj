@@ -21,9 +21,4 @@
     <ProjectReference Include="..\LinkedIn.Domain\LinkedIn.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

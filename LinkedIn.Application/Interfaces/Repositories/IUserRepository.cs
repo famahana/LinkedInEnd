@@ -13,7 +13,7 @@ namespace LinkedIn.Application.Interfaces.Repositories
         Task<UserEntity> GetUserByIdAsync(Guid id);
         Task<UserEntity> GetUserByEmailAsync(string email);
         Task<string> AddUserAsync(UserEntity user,string password);
-        Task<string> DeleteUserByGuidAsync(Guid id);
+        Task<string> DeleteUserByIdAsync(Guid id);
         Task<string> DeleteUserByEmailAsync(string email);
         
     }
