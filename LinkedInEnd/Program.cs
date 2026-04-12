@@ -1,8 +1,21 @@
 
-using LinkedIn.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using LinkedIn.Application.Interfaces.Helpers;
+using LinkedIn.Application.Interfaces.Repositories;
+using LinkedIn.Application.Interfaces.Services;
+using LinkedIn.Application.Mapping;
+using LinkedIn.Application.Services;
+using LinkedIn.Infrastructure.Configuration;
+using LinkedIn.Infrastructure.Data;
+using LinkedIn.Infrastructure.Helpers;
+using LinkedIn.Infrastructure.Repositories;
+using LinkedIn.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace LinkedInEnd
 {
@@ -11,6 +24,14 @@ namespace LinkedInEnd
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
+            var jwtSettings = configuration
+            .GetSection("Jwt")
+            .Get<JwtSettings>()
+            ?? throw new Exception("JWT settings not configured.");
+
+            builder.Services.Configure<JwtSettings>(
+                configuration.GetSection("Jwt"));
 
             // Add services to the container.
             builder.Services.AddDbContext<LinkedInDbContext>(options =>
@@ -26,11 +47,76 @@ namespace LinkedInEnd
                           .AllowAnyHeader();
                 });
             });
+            builder.Services.AddAutoMapper(
+               _ => { },     
+               typeof(UserProfile).Assembly
+               );
+            //repository
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+            builder.Services.AddScoped<IProfileRepository,ProfileRepository>();
+            //services
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            //other
+            builder.Services.AddScoped<IHashHelper, HashHelper>();
+
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter JWT token"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+            });
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtSettings.Key)
+                        ),
+
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
