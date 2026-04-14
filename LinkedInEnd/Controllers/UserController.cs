@@ -53,15 +53,9 @@ namespace LinkedIn.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody]UserCreateDto dto)
         {
-            var email = await _userService.AddUserAsync(dto);
-            if(email!= null)
-            {
-                return CreatedAtAction(nameof(GetUserByEmail), new {email}, email);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            string email = await _userService.AddUserAsync(dto);
+            return Ok(new {_email= email});
+            
 
         }
         [HttpPost("login")]
