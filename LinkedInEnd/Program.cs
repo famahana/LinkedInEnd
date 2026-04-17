@@ -58,6 +58,8 @@ namespace LinkedInEnd
             //services
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
+
             //other
             builder.Services.AddScoped<IHashHelper, HashHelper>();
 

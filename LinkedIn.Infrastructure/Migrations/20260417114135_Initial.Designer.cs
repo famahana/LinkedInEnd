@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LinkedIn.Infrastructure.Migrations
 {
     [DbContext(typeof(LinkedInDbContext))]
-    [Migration("20260409091032_initial")]
-    partial class initial
+    [Migration("20260417114135_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

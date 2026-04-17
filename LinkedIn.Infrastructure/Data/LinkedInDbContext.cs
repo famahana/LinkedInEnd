@@ -1,4 +1,5 @@
-﻿using LinkedIn.Domain.Entities;
+﻿using AutoMapper;
+using LinkedIn.Domain.Entities;
 using LinkedIn.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -50,7 +51,12 @@ namespace LinkedIn.Infrastructure.Data
                         .WithMany(p => p.Likes)
                         .HasForeignKey(l => l.PostId)
                         .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<UserEntity>().HasIndex(u => u.Email).IsUnique();
+                    modelBuilder.Entity<UserEntity>().HasIndex(u => u.Email).IsUnique();
+                    modelBuilder.Entity<UserEntity>()
+                        .HasOne(u => u.Profile)
+                        .WithOne(p => p.User)
+                        .HasForeignKey<ProfileEntity>(p => p.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
             }
         }
 }
