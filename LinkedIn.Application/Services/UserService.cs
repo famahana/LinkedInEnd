@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LinkedIn.Application.DTOs;
 using LinkedIn.Application.DTOs.UserDto;
 using LinkedIn.Application.Interfaces.Helpers;
 using LinkedIn.Application.Interfaces.Repositories;
@@ -64,21 +65,30 @@ namespace LinkedIn.Application.Services
             return _mapper.Map<UserReadDto>(user);
         }
 
-        public async Task<string> LoginAsync(UserLoginDto dto)
+        public async Task<AuthResponseDto> LoginAsync(UserLoginDto dto)
         {
             dto.Email = dto.Email.Trim();
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
             {
-                throw new UnauthorizedAccessException("Невірний email або пароль");
+                throw new UnauthorizedAccessException("Wrond email or Password");
             }
             if (!_hashHelper.IsValidPassword(dto.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Неверный логин или пароль");
+                throw new UnauthorizedAccessException("Wrong login or password");
 
             }
             var token = _jwtService.GenerateAccessToken(dto, user.Role.ToString());
-            return token;
+            return new AuthResponseDto
+            {
+                AccessToken = token,
+                User = new UserReadDto
+                {
+                    Email = user.Email,
+                    Role = user.Role.ToString(),
+                    CreatedAt = user.CreatedAt
+                }
+            };
         }
     }
 }

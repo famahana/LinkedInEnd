@@ -61,8 +61,8 @@ namespace LinkedIn.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            var token = await _userService.LoginAsync(dto);
-            return Ok(new { accessToken = token });
+            var response = await _userService.LoginAsync(dto);
+            return Ok(response);
         }
 
 
