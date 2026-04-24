@@ -52,11 +52,13 @@ namespace LinkedIn.Infrastructure.Repositories
             }
             profiles.FirstName = profile.FirstName;
             profiles.LastName = profile.LastName;
-            profile.Bio = profile.Bio;
-            profile.AvatarUrl = profile.AvatarUrl;
-            profile.Location = profile.Location;
+            profiles.Bio = profile.Bio;
+            profiles.Company = profile.Company;
+            profiles.Position = profile.Position;
+            profiles.AvatarUrl = profile.AvatarUrl;
+            profiles.Location = profile.Location;
             await _linkedInDbContext.SaveChangesAsync();
-            return profile;  
+            return profiles;  
         }
         
     }

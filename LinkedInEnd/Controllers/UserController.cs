@@ -54,14 +54,26 @@ namespace LinkedIn.Api.Controllers
         public async Task<IActionResult> AddUser([FromBody]UserCreateDto dto)
         {
             string email = await _userService.AddUserAsync(dto);
-            return Ok(new {_email= email});
-            
+            if(email == null)
+            {
+                return BadRequest(new { message = "User already exists" });
+            }
+            return CreatedAtAction(nameof(GetUserByEmail), new { email }, new
+            {
+                message = "Registration successful",
+                email
+            });
+
 
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto dto)
         {
             var response = await _userService.LoginAsync(dto);
+            if(response == null)
+            {
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
             return Ok(response);
         }
 

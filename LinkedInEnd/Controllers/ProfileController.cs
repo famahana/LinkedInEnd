@@ -1,8 +1,10 @@
 ﻿using LinkedIn.Application.DTOs.ProfileDto;
 using LinkedIn.Application.Interfaces.Services;
+using LinkedIn.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LinkedIn.Api.Controllers
 {
@@ -11,22 +13,49 @@ namespace LinkedIn.Api.Controllers
     [Authorize]
     public class ProfileController(IProfileService _profileService) : ControllerBase
     {
-        [HttpGet("{userId:guid}")]
-        public async Task<IActionResult> GetProfileByUserId(Guid userId)
+        //[HttpGet("{userId:guid}")]
+        //public async Task<IActionResult> GetProfileByUserId(Guid userId)
+        //{
+        //    var profile = await _profileService.GetProfileByUserIdAsync(userId);
+        //    if(profile == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(profile);
+        //}
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMyProfile()
         {
-            var profile = await _profileService.GetProfileByUserIdAsync(userId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(userId == null)
+            {
+                return Unauthorized();
+            }
+            var profile = await _profileService.GetProfileByUserIdAsync(Guid.Parse(userId));
             if(profile == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Profile not found" });
             }
             return Ok(profile);
         }
-        [HttpPost("{userId:guid}")]
-        public async Task<IActionResult> AddProfile(Guid userId,ProfileCreateDto profile)
+        [HttpPost]
+        public async Task<IActionResult> CreateProfile(ProfileCreateDto profileCreateDto)
         {
-            var profiles = await _profileService.AddProfileAsync(userId, profile);
-            return Ok(profiles);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(userId == null)
+            {
+                return Unauthorized();
+            }
+            var profile = await _profileService.AddProfileAsync(Guid.Parse(userId), profileCreateDto);
+            return Ok(profile);
         }
+
+        //[HttpPost("{userId:guid}")]
+        //public async Task<IActionResult> AddProfile(Guid userId,ProfileCreateDto profile)
+        //{
+        //    var profiles = await _profileService.AddProfileAsync(userId, profile);
+        //    return Ok(profiles);
+        //}
         [HttpPut("{userId:guid}")]
         public async Task<IActionResult> Update(Guid userId,ProfileUpdateDto profile)
         {

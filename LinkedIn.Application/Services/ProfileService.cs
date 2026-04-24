@@ -52,7 +52,7 @@ namespace LinkedIn.Application.Services
             {
                 return null;
             }
-            return _mapper.Map<ProfileReadDto>(updatedProfile);
+            return _mapper.Map<ProfileReadDto>(updated);
 
         }
     }

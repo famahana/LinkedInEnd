@@ -14,6 +14,8 @@ namespace LinkedIn.Domain.Entities
         public string? Bio { get; set; }
         public string? AvatarUrl { get; set; }
         public string? Location { get; set; }
+        public string? Company { get; set; }
+        public string? Position { get; set; }
         public Guid UserId { get; set; }
         public UserEntity User { get; set; }
     }

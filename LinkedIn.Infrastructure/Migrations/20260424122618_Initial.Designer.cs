@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LinkedIn.Infrastructure.Migrations
 {
     [DbContext(typeof(LinkedInDbContext))]
-    [Migration("20260417114135_Initial")]
+    [Migration("20260424122618_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -117,6 +117,9 @@ namespace LinkedIn.Infrastructure.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Company")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -126,6 +129,9 @@ namespace LinkedIn.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Position")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")

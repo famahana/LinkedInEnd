@@ -71,14 +71,14 @@ namespace LinkedIn.Application.Services
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
             {
-                throw new UnauthorizedAccessException("Wrond email or Password");
+                return null;
             }
             if (!_hashHelper.IsValidPassword(dto.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Wrong login or password");
+                return null;
 
             }
-            var token = _jwtService.GenerateAccessToken(dto, user.Role.ToString());
+            var token = _jwtService.GenerateAccessToken(user);
             return new AuthResponseDto
             {
                 AccessToken = token,
