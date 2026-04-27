@@ -13,6 +13,7 @@ using LinkedIn.Infrastructure.Repositories;
 using LinkedIn.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -122,6 +123,17 @@ namespace LinkedInEnd
 
             var app = builder.Build();
 
+            app.UseStaticFiles(); 
+
+           
+            var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(uploadsPath),
+                RequestPath = "/uploads"
+            });
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -131,7 +143,7 @@ namespace LinkedInEnd
             app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

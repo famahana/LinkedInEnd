@@ -13,6 +13,7 @@ namespace LinkedIn.Domain.Entities
         public string LastName { get; set; }
         public string? Bio { get; set; }
         public string? AvatarUrl { get; set; }
+        public string? BannerUrl { get; set; }
         public string? Location { get; set; }
         public string? Company { get; set; }
         public string? Position { get; set; }

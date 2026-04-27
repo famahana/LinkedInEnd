@@ -22,12 +22,12 @@ namespace LinkedIn.Infrastructure.Repositories
             _hashHelper = hashHelper;
         }
 
-        public async Task<string> AddUserAsync(UserEntity user, string password)
+        public async Task<UserEntity> AddUserAsync(UserEntity user, string password)
         {
             user.PasswordHash = _hashHelper.Hash(password);
             await _linkedInDbContext.Users.AddAsync(user);
             await _linkedInDbContext.SaveChangesAsync();
-            return user.Email;
+            return user;
 
         }
 

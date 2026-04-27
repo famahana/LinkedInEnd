@@ -111,6 +111,9 @@ namespace LinkedIn.Infrastructure.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BannerUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 

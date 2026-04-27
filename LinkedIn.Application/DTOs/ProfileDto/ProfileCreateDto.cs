@@ -14,6 +14,7 @@ namespace LinkedIn.Application.DTOs.ProfileDto
         public string? Company { get; set; }
         public string? Position { get; set; }
         public string? AvatarUrl { get; set; }
+        public string? BannerUrl { get; set; }
         public string? Location { get; set; }
     }
 }

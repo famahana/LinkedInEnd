@@ -13,26 +13,16 @@ namespace LinkedIn.Api.Controllers
     [Authorize]
     public class ProfileController(IProfileService _profileService) : ControllerBase
     {
-        //[HttpGet("{userId:guid}")]
-        //public async Task<IActionResult> GetProfileByUserId(Guid userId)
-        //{
-        //    var profile = await _profileService.GetProfileByUserIdAsync(userId);
-        //    if(profile == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(profile);
-        //}
         [HttpGet("me")]
         public async Task<IActionResult> GetMyProfile()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if(userId == null)
+            if (userId == null)
             {
                 return Unauthorized();
             }
             var profile = await _profileService.GetProfileByUserIdAsync(Guid.Parse(userId));
-            if(profile == null)
+            if (profile == null)
             {
                 return NotFound(new { message = "Profile not found" });
             }
@@ -42,7 +32,7 @@ namespace LinkedIn.Api.Controllers
         public async Task<IActionResult> CreateProfile(ProfileCreateDto profileCreateDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if(userId == null)
+            if (userId == null)
             {
                 return Unauthorized();
             }
@@ -50,34 +40,24 @@ namespace LinkedIn.Api.Controllers
             return Ok(profile);
         }
 
-        //[HttpPost("{userId:guid}")]
-        //public async Task<IActionResult> AddProfile(Guid userId,ProfileCreateDto profile)
-        //{
-        //    var profiles = await _profileService.AddProfileAsync(userId, profile);
-        //    return Ok(profiles);
-        //}
-        [HttpPut("{userId:guid}")]
-        public async Task<IActionResult> Update(Guid userId,ProfileUpdateDto profile)
+
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateMyProfile(ProfileUpdateDto dto)
         {
-            var profiles = await _profileService.UpdateProfileAsync(userId,profile);
-            if(profiles == null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
             {
-                return NotFound();
+                return Unauthorized();
             }
-            return Ok(profiles);
-        }
-        [HttpDelete("{userId:guid}")]
-        public async Task<IActionResult> DeleteProfileById(Guid userId)
-        {
-            var deleted = await _profileService.DeleteProfileAsync(userId);
-            if(!deleted)
+            var updated = await _profileService.UpdateProfileAsync(Guid.Parse(userId), dto);
+            if (updated == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Profile not found" });
             }
-            return NoContent();
+            return Ok(updated);
         }
-
-
-
     }
+            
+        
+    
 }

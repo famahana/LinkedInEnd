@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LinkedIn.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,6 +58,7 @@ namespace LinkedIn.Infrastructure.Migrations
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BannerUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Company = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Position = table.Column<string>(type: "nvarchar(max)", nullable: true),

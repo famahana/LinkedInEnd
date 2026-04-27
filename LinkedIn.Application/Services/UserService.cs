@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinkedIn.Application.DTOs.ProfileDto;
 
 namespace LinkedIn.Application.Services
 {
@@ -20,12 +21,14 @@ namespace LinkedIn.Application.Services
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
         private readonly IHashHelper _hashHelper;
-        public UserService(IUserRepository userRepository,IMapper mapper,IJwtService jwtService,IHashHelper hashHelper)
+        private readonly IProfileService _profileService;
+        public UserService(IUserRepository userRepository,IMapper mapper,IJwtService jwtService,IHashHelper hashHelper,IProfileService profileService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _jwtService = jwtService;
             _hashHelper = hashHelper;    
+            _profileService = profileService;
         }
 
         public async Task<string> AddUserAsync(UserCreateDto dto)
@@ -33,7 +36,24 @@ namespace LinkedIn.Application.Services
             var entity = _mapper.Map<UserEntity>(dto);
             dto.Email = dto.Email.Trim();
             entity.Role = UserRole.User;
-            return await _userRepository.AddUserAsync(entity, dto.Password);
+            var user = await _userRepository.AddUserAsync(entity, dto.Password);
+            if(user != null)
+            {
+                await _profileService.AddProfileAsync(user.Id, new ProfileCreateDto
+                {
+                    AvatarUrl = "https://localhost:7271/uploads/1247.png",
+                    BannerUrl = "https://localhost:7271/uploads/images.jpg",
+                    FirstName = "Your name",
+                    LastName = "Your lastname",
+                    Company = "Your company",
+                    Position = "Your position",
+                    Location = "Your location",
+                    Bio = ""
+                    
+                });
+                return user.Email;
+            }
+            return null;
         }
 
         public async Task<string> DeleteUserByEmailAsync(string email)

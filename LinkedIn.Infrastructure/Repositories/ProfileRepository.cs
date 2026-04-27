@@ -55,7 +55,6 @@ namespace LinkedIn.Infrastructure.Repositories
             profiles.Bio = profile.Bio;
             profiles.Company = profile.Company;
             profiles.Position = profile.Position;
-            profiles.AvatarUrl = profile.AvatarUrl;
             profiles.Location = profile.Location;
             await _linkedInDbContext.SaveChangesAsync();
             return profiles;  

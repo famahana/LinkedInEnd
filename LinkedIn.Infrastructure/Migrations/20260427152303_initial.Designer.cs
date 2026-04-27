@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LinkedIn.Infrastructure.Migrations
 {
     [DbContext(typeof(LinkedInDbContext))]
-    [Migration("20260424122618_Initial")]
-    partial class Initial
+    [Migration("20260427152303_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -112,6 +112,9 @@ namespace LinkedIn.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BannerUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Bio")
