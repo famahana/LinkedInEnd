@@ -18,53 +18,47 @@ namespace LinkedIn.Infrastructure.Repositories
             _linkedInDbContext = context;
         }
 
-        public async Task<int> AddProfileAsync(ProfileEntity profile)
+        public async Task<ProfileEntity> AddProfileAsync(ProfileEntity profile)
         {
             _linkedInDbContext.Profiles.Add(profile);
             await _linkedInDbContext.SaveChangesAsync();
-            return profile.Id;
+            return profile;
 
         }
 
-        public async Task<int> DeleteProfileByIdAsync(int id)
+        public async Task<bool> DeleteProfileAsync(Guid userId)
         {
-            var profile = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p=>p.Id == id);
-            if(profile ==null)
+            var profile = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            if(profile == null)
             {
-                return 0;
+                return false;
             }
             _linkedInDbContext.Profiles.Remove(profile);
             await _linkedInDbContext.SaveChangesAsync();
-            return profile.Id;
-
+            return true;
         }
 
-        public async Task<ICollection<ProfileEntity>> GetAllProfileAsync()
+        public async Task<ProfileEntity?> GetProfileByUserIdAsync(Guid userId)
         {
-            return await _linkedInDbContext.Profiles.ToListAsync();
-      
+            return await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
         }
 
-        public async Task<ProfileEntity> GetProfileByIdAsync(int id)
+        public async Task<ProfileEntity?> UpdateProfileByIdAsync(Guid userId,ProfileEntity profile)
         {
-            return await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p => p.Id == id);
-        }
-
-        public async Task<int> UpdateProfileByIdAsync(int id, ProfileEntity profile)
-        {
-            var profiles = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p => p.Id == id);
+            var profiles = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p=>p.UserId == userId);
             if(profiles == null)
             {
-                return 0;
+                return null;
             }
-            profiles.Location = profile.Location;
-            profiles.Bio = profile.Bio;
-            profiles.AvatarUrl = profile.AvatarUrl;
             profiles.FirstName = profile.FirstName;
             profiles.LastName = profile.LastName;
+            profiles.Bio = profile.Bio;
+            profiles.Company = profile.Company;
+            profiles.Position = profile.Position;
+            profiles.Location = profile.Location;
             await _linkedInDbContext.SaveChangesAsync();
-            return profile.Id;
-
+            return profiles;  
         }
+        
     }
 }

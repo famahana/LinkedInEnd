@@ -12,7 +12,7 @@ namespace LinkedIn.Application.Interfaces.Repositories
         Task<ICollection<UserEntity>> GetAllUsersAsync();
         Task<UserEntity> GetUserByIdAsync(Guid id);
         Task<UserEntity> GetUserByEmailAsync(string email);
-        Task<string> AddUserAsync(UserEntity user,string password);
+        Task<UserEntity> AddUserAsync(UserEntity user,string password);
         Task<string> DeleteUserByIdAsync(Guid id);
         Task<string> DeleteUserByEmailAsync(string email);
         

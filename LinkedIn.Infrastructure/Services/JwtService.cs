@@ -2,6 +2,7 @@
 using LinkedIn.Application.Interfaces.Services;
 using LinkedIn.Domain.Entities;
 using LinkedIn.Infrastructure.Configuration;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -23,14 +24,15 @@ namespace LinkedIn.Infrastructure.Services
             _jwtSettings = jwtOptions.Value;
         }
 
-        public string GenerateAccessToken(UserLoginDto dto, string role)
+        public string GenerateAccessToken(UserEntity user)
         {
             var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
 
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, dto.Email),
-            new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

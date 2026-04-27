@@ -10,7 +10,7 @@ namespace LinkedIn.Application.Interfaces.Services
 {
     public interface IJwtService
     {
-        string GenerateAccessToken(UserLoginDto dto, string role);
+        string GenerateAccessToken(UserEntity user);
         RefreshTokenEntity GenerateRefreshToken(string ipAdress);
     }
 }

@@ -1,4 +1,5 @@
-﻿using LinkedIn.Application.DTOs.UserDto;
+﻿using LinkedIn.Application.DTOs;
+using LinkedIn.Application.DTOs.UserDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,6 @@ namespace LinkedIn.Application.Interfaces.Services
         Task<string> AddUserAsync(UserCreateDto dto);
         Task<string> DeleteUserByIdAsync(Guid id);
         Task<string> DeleteUserByEmailAsync(string email);
-        Task<string> LoginAsync(UserLoginDto dto);
+        Task<AuthResponseDto> LoginAsync(UserLoginDto dto);
     }
 }

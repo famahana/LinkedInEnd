@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LinkedIn.Application.DTOs;
 using LinkedIn.Application.DTOs.UserDto;
 using LinkedIn.Application.Interfaces.Helpers;
 using LinkedIn.Application.Interfaces.Repositories;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinkedIn.Application.DTOs.ProfileDto;
 
 namespace LinkedIn.Application.Services
 {
@@ -19,12 +21,14 @@ namespace LinkedIn.Application.Services
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
         private readonly IHashHelper _hashHelper;
-        public UserService(IUserRepository userRepository,IMapper mapper,IJwtService jwtService,IHashHelper hashHelper)
+        private readonly IProfileService _profileService;
+        public UserService(IUserRepository userRepository,IMapper mapper,IJwtService jwtService,IHashHelper hashHelper,IProfileService profileService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _jwtService = jwtService;
             _hashHelper = hashHelper;    
+            _profileService = profileService;
         }
 
         public async Task<string> AddUserAsync(UserCreateDto dto)
@@ -32,7 +36,24 @@ namespace LinkedIn.Application.Services
             var entity = _mapper.Map<UserEntity>(dto);
             dto.Email = dto.Email.Trim();
             entity.Role = UserRole.User;
-            return await _userRepository.AddUserAsync(entity, dto.Password);
+            var user = await _userRepository.AddUserAsync(entity, dto.Password);
+            if(user != null)
+            {
+                await _profileService.AddProfileAsync(user.Id, new ProfileCreateDto
+                {
+                    AvatarUrl = "https://localhost:7271/uploads/1247.png",
+                    BannerUrl = "https://localhost:7271/uploads/images.jpg",
+                    FirstName = "Your name",
+                    LastName = "Your lastname",
+                    Company = "Your company",
+                    Position = "Your position",
+                    Location = "Your location",
+                    Bio = ""
+                    
+                });
+                return user.Email;
+            }
+            return null;
         }
 
         public async Task<string> DeleteUserByEmailAsync(string email)
@@ -64,21 +85,30 @@ namespace LinkedIn.Application.Services
             return _mapper.Map<UserReadDto>(user);
         }
 
-        public async Task<string> LoginAsync(UserLoginDto dto)
+        public async Task<AuthResponseDto> LoginAsync(UserLoginDto dto)
         {
             dto.Email = dto.Email.Trim();
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
             if (user == null)
             {
-                throw new UnauthorizedAccessException("Невірний email або пароль");
+                return null;
             }
             if (!_hashHelper.IsValidPassword(dto.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Неверный логин или пароль");
+                return null;
 
             }
-            var token = _jwtService.GenerateAccessToken(dto, user.Role.ToString());
-            return token;
+            var token = _jwtService.GenerateAccessToken(user);
+            return new AuthResponseDto
+            {
+                AccessToken = token,
+                User = new UserReadDto
+                {
+                    Email = user.Email,
+                    Role = user.Role.ToString(),
+                    CreatedAt = user.CreatedAt
+                }
+            };
         }
     }
 }

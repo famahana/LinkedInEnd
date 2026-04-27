@@ -9,10 +9,9 @@ namespace LinkedIn.Application.Interfaces.Repositories
 {
     public interface IProfileRepository
     {
-        Task<ICollection<ProfileEntity>> GetAllProfileAsync();
-        Task<ProfileEntity> GetProfileByIdAsync(int id);
-        Task<int> AddProfileAsync(ProfileEntity profile);
-        Task<int> DeleteProfileByIdAsync(int id);
-        Task<int> UpdateProfileByIdAsync(int id, ProfileEntity profile);
+        Task<ProfileEntity?> GetProfileByUserIdAsync(Guid userId);
+        Task<ProfileEntity> AddProfileAsync(ProfileEntity profile);
+        Task<ProfileEntity?> UpdateProfileByIdAsync(Guid userId,ProfileEntity profile);
+        Task<bool> DeleteProfileAsync(Guid userId);
     }
 }
