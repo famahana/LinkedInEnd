@@ -13,5 +13,7 @@ namespace LinkedIn.Application.Interfaces.Repositories
         Task<ProfileEntity> AddProfileAsync(ProfileEntity profile);
         Task<ProfileEntity?> UpdateProfileByIdAsync(Guid userId,ProfileEntity profile);
         Task<bool> DeleteProfileAsync(Guid userId);
+        Task<ProfileEntity?> UpdateAvatarAsync(Guid userId,string avatar);
+        Task<ProfileEntity?> UpdateBannerAsync(Guid userId,string avatar);
     }
 }

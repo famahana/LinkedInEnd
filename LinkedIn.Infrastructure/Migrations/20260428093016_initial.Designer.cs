@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LinkedIn.Infrastructure.Migrations
 {
     [DbContext(typeof(LinkedInDbContext))]
-    [Migration("20260427152303_initial")]
+    [Migration("20260428093016_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -95,6 +95,9 @@ namespace LinkedIn.Infrastructure.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("imageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
