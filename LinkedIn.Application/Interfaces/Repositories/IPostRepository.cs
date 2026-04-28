@@ -11,8 +11,9 @@ namespace LinkedIn.Application.Interfaces.Repositories
     {
         Task<ICollection<PostEntity>> GetAllPostAsync();
         Task<PostEntity> GetPostByIdAsync(int id);
-        Task<int> AddPostAsync(PostEntity post);
+        Task<PostEntity> AddPostAsync(PostEntity post);
         Task<int> DeletePostByIdAsync(int id);
         Task<int> UpdatePostByIdAsync(int id , PostEntity post);
+        Task<PostEntity> GetPostWithDetailsAsync(int id);
     }
 }

@@ -43,6 +43,30 @@ namespace LinkedIn.Infrastructure.Repositories
             return await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
         }
 
+        public async Task<ProfileEntity?> UpdateAvatarAsync(Guid userId, string avatar)
+        {
+            var profile = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p=> p.UserId == userId);
+            if(profile == null)
+            {
+                return null;
+            }
+            profile.AvatarUrl = avatar;
+            await _linkedInDbContext.SaveChangesAsync();
+            return profile;
+        }
+
+        public async Task<ProfileEntity?> UpdateBannerAsync(Guid userId, string avatar)
+        {
+            var profile = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (profile == null)
+            {
+                return null;
+            }
+            profile.BannerUrl = avatar;
+            await _linkedInDbContext.SaveChangesAsync();
+            return profile;
+        }
+
         public async Task<ProfileEntity?> UpdateProfileByIdAsync(Guid userId,ProfileEntity profile)
         {
             var profiles = await _linkedInDbContext.Profiles.FirstOrDefaultAsync(p=>p.UserId == userId);

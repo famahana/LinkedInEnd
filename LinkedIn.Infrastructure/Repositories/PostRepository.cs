@@ -18,11 +18,11 @@ namespace LinkedIn.Infrastructure.Repositories
             _linkedInDbContext = context;
         }
 
-        public async Task<int> AddPostAsync(PostEntity post)
+        public async Task<PostEntity> AddPostAsync(PostEntity post)
         {
             _linkedInDbContext.Posts.Add(post);
             await _linkedInDbContext.SaveChangesAsync();
-            return post.Id;
+            return post;
         }
 
         public async Task<int> DeletePostByIdAsync(int id)
@@ -39,12 +39,17 @@ namespace LinkedIn.Infrastructure.Repositories
 
         public async Task<ICollection<PostEntity>> GetAllPostAsync()
         {
-            return await _linkedInDbContext.Posts.ToListAsync();
+            return await _linkedInDbContext.Posts.Include(p=> p.User).ThenInclude(u => u.Profile).OrderByDescending(p=>p.CreatedAt).ToArrayAsync();
         }
 
         public async Task<PostEntity> GetPostByIdAsync(int id)
         {
             return await _linkedInDbContext.Posts.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<PostEntity> GetPostWithDetailsAsync(int id)
+        {
+            return await _linkedInDbContext.Posts.Include(p => p.User).ThenInclude(u => u.Profile).FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<int> UpdatePostByIdAsync(int id, PostEntity post)

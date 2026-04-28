@@ -56,6 +56,28 @@ namespace LinkedIn.Api.Controllers
             }
             return Ok(updated);
         }
+        [HttpPost("upload-avatar")]
+        public async Task<IActionResult>UploadAvatar(IFormFile file)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var updated = await _profileService.UpdateAvatarAsync(Guid.Parse(userId), file);
+            return Ok(updated);
+        }
+        [HttpPost("upload-banner")]
+        public async Task<IActionResult>UploadBanner(IFormFile file)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var updated = await _profileService.UpdateBannerAsync(Guid.Parse(userId), file);
+            return Ok(updated);
+        }
     }
             
         
