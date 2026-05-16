@@ -62,12 +62,19 @@ namespace LinkedIn.Infrastructure.Repositories
 
         public async Task<UserEntity> GetUserByEmailAsync(string email)
         {
-            return await _linkedInDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _linkedInDbContext.Users.Include(u => u.refreshTokens).FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<UserEntity> GetUserByIdAsync(Guid id)
         {
-            return await _linkedInDbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _linkedInDbContext.Users.Include(u=>u.refreshTokens).FirstOrDefaultAsync(u => u.Id == id);
         }
+
+        public async Task UpdateUserAsync(UserEntity user)
+        {
+           _linkedInDbContext.Users.Update(user);
+            await _linkedInDbContext.SaveChangesAsync();
+        }
+       
     }
 }

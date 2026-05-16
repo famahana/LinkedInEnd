@@ -10,12 +10,7 @@ namespace LinkedIn.Api.Controllers
     [ApiController]
     public class UserController(IUserService _userService) : ControllerBase
     {
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllUsers()
-        //{
-        //    var users = await _userService.GetAllUsersAsync();
-        //    return Ok(users);
-        //}
+        
         [Authorize]
         [HttpGet("by-email/{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
@@ -27,30 +22,6 @@ namespace LinkedIn.Api.Controllers
             }
             return Ok(user);
         }
-        //[HttpGet("{id:guid}")]
-        //public async Task<IActionResult> GetUserById(Guid id)
-        //{
-        //    var user = await _userService.GetUserByIdAsync(id);
-        //    if(user == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(user);
-        //}
-        //[Authorize]
-        //[HttpDelete("by-email/{email}")]
-        //public async Task<IActionResult> DeleteUserByEmail(string email)
-        //{
-        //    var result = await _userService.DeleteUserByEmailAsync(email);
-        //    return Ok(result);
-        //}
-        //[Authorize]
-        //[HttpDelete("{id:guid}")]
-        //public async Task<IActionResult> DeleteUserById(Guid id)
-        //{
-        //    var result = await _userService.DeleteUserByIdAsync(id);
-        //    return Ok(result);
-        //}
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody]UserCreateDto dto)
         {
@@ -70,7 +41,8 @@ namespace LinkedIn.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            var response = await _userService.LoginAsync(dto);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+            var response = await _userService.LoginAsync(dto,ipAddress);
             if(response == null)
             {
                 return Unauthorized(new { message = "Invalid email or password" });

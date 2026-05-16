@@ -11,5 +11,6 @@ namespace LinkedIn.Application.DTOs
     {
         public string AccessToken {  get; set; }
         public UserReadDto User { get; set; }
+        public string RefreshToken { get; set; }
     }
 }
