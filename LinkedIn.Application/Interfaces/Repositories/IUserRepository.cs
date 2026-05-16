@@ -15,6 +15,8 @@ namespace LinkedIn.Application.Interfaces.Repositories
         Task<UserEntity> AddUserAsync(UserEntity user,string password);
         Task<string> DeleteUserByIdAsync(Guid id);
         Task<string> DeleteUserByEmailAsync(string email);
-        
+        Task UpdateUserAsync(UserEntity user);
+
+
     }
 }

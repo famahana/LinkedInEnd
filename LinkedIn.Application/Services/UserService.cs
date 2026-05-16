@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using LinkedIn.Application.DTOs;
+using LinkedIn.Application.DTOs.ProfileDto;
+using LinkedIn.Application.DTOs.RefreshTokenRequestDto;
 using LinkedIn.Application.DTOs.UserDto;
 using LinkedIn.Application.Interfaces.Helpers;
 using LinkedIn.Application.Interfaces.Repositories;
@@ -9,9 +11,10 @@ using LinkedIn.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using LinkedIn.Application.DTOs.ProfileDto;
 
 namespace LinkedIn.Application.Services
 {
@@ -85,7 +88,7 @@ namespace LinkedIn.Application.Services
             return _mapper.Map<UserReadDto>(user);
         }
 
-        public async Task<AuthResponseDto> LoginAsync(UserLoginDto dto)
+        public async Task<AuthResponseDto> LoginAsync(UserLoginDto dto,string IpAddress)
         {
             dto.Email = dto.Email.Trim();
             var user = await _userRepository.GetUserByEmailAsync(dto.Email);
@@ -99,9 +102,14 @@ namespace LinkedIn.Application.Services
 
             }
             var token = _jwtService.GenerateAccessToken(user);
+            var refresh = _jwtService.GenerateRefreshToken(IpAddress);
+            user.refreshTokens.Add(refresh);
+            await _userRepository.UpdateUserAsync(user);
+
             return new AuthResponseDto
             {
                 AccessToken = token,
+                RefreshToken = refresh.Token,
                 User = new UserReadDto
                 {
                     Email = user.Email,
@@ -109,6 +117,38 @@ namespace LinkedIn.Application.Services
                     CreatedAt = user.CreatedAt
                 }
             };
+
+        }
+
+        public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto dto, string IpAddress)
+        {
+
+         
+                var principal = _jwtService.GetPrincipalFromExpiredToken(dto.AccessToken);
+                if (principal == null) return null;
+                var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;        
+                if (!Guid.TryParse(userIdClaim, out Guid userId)) return null;
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null) return null;
+                var existingToken = user.refreshTokens.FirstOrDefault(t => t.Token == dto.RefreshToken);
+  
+                if (existingToken == null || existingToken.Expires < DateTime.UtcNow)return null;
+                var newAccessToken = _jwtService.GenerateAccessToken(user);
+                var newRefreshToken = _jwtService.GenerateRefreshToken(IpAddress);
+                user.refreshTokens.Remove(existingToken);
+                user.refreshTokens.Add(newRefreshToken);
+                await _userRepository.UpdateUserAsync(user);
+                return new AuthResponseDto
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken.Token,
+                    User = _mapper.Map<UserReadDto>(user)
+                };
+            
+            
+
+
+
         }
     }
 }
