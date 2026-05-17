@@ -33,6 +33,9 @@ namespace LinkedInEnd
 
             builder.Services.Configure<JwtSettings>(
                 configuration.GetSection("Jwt"));
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+
 
             // Add services to the container.
             builder.Services.AddDbContext<LinkedInDbContext>(options =>
@@ -56,11 +59,14 @@ namespace LinkedInEnd
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<IProfileRepository,ProfileRepository>();
+            builder.Services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
             //services
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IPostService, PostService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IUserVerificationService, UserVerificationService>();
 
 
             //other
@@ -121,7 +127,11 @@ namespace LinkedInEnd
                     };
                 });
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireVerifiedEmail", policy =>
+                    policy.RequireClaim("IsEmailVerified", "true"));
+            });
 
             var app = builder.Build();
 

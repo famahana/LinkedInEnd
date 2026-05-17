@@ -19,7 +19,8 @@ namespace LinkedIn.Infrastructure.Data
             public DbSet<ProfileEntity> Profiles { get; set; }
             public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
             public DbSet<PostEntity> Posts { get; set; }
-            public LinkedInDbContext(DbContextOptions<LinkedInDbContext> options) : base(options)
+            public DbSet<EmailVerificationCodeEntity> EmailVerificationCodes { get; set; }
+        public LinkedInDbContext(DbContextOptions<LinkedInDbContext> options) : base(options)
             {
 
             }

@@ -9,10 +9,11 @@ namespace LinkedIn.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PostController(IPostService _postService) : ControllerBase
     {
-        [Authorize]
         [HttpPost]
+        [Authorize(Policy = "RequireVerifiedEmail")]
         public async Task<IActionResult> CreatePost(CreatePostDto dto)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
