@@ -33,7 +33,9 @@ namespace LinkedIn.Infrastructure.Services
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("IsEmailVerified", user.IsEmailVerified.ToString().ToLower()),
+
         };
 
             var signingKey = new SymmetricSecurityKey(key);

@@ -1,6 +1,7 @@
 ﻿using LinkedIn.Application.DTOs;
 using LinkedIn.Application.DTOs.RefreshTokenRequestDto;
 using LinkedIn.Application.DTOs.UserDto;
+using LinkedIn.Application.DTOs.VerifyEmailDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,9 @@ namespace LinkedIn.Application.Interfaces.Services
         Task<string> DeleteUserByEmailAsync(string email);
         Task<AuthResponseDto> LoginAsync(UserLoginDto dto,string IpAddress);
         Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto dto, string IpAddress);
+        Task<AuthResponseDto> VerifyAndRefreshAsync(VerifyEmailDto dto);
 
-         
+
+
     }
 }

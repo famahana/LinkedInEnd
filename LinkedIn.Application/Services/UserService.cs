@@ -3,6 +3,7 @@ using LinkedIn.Application.DTOs;
 using LinkedIn.Application.DTOs.ProfileDto;
 using LinkedIn.Application.DTOs.RefreshTokenRequestDto;
 using LinkedIn.Application.DTOs.UserDto;
+using LinkedIn.Application.DTOs.VerifyEmailDto;
 using LinkedIn.Application.Interfaces.Helpers;
 using LinkedIn.Application.Interfaces.Repositories;
 using LinkedIn.Application.Interfaces.Services;
@@ -25,13 +26,16 @@ namespace LinkedIn.Application.Services
         private readonly IJwtService _jwtService;
         private readonly IHashHelper _hashHelper;
         private readonly IProfileService _profileService;
-        public UserService(IUserRepository userRepository,IMapper mapper,IJwtService jwtService,IHashHelper hashHelper,IProfileService profileService)
+        private readonly IUserVerificationService _userVerificationService;
+        public UserService(IUserRepository userRepository,IMapper mapper,IJwtService jwtService,IHashHelper hashHelper,IProfileService profileService,IUserVerificationService userVerificationService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _jwtService = jwtService;
             _hashHelper = hashHelper;    
             _profileService = profileService;
+            _userVerificationService = userVerificationService;
+            
         }
 
         public async Task<string> AddUserAsync(UserCreateDto dto)
@@ -40,6 +44,7 @@ namespace LinkedIn.Application.Services
             dto.Email = dto.Email.Trim();
             entity.Role = UserRole.User;
             var user = await _userRepository.AddUserAsync(entity, dto.Password);
+            await _userVerificationService.GenerateAndSendCodeAsync(entity.Email);
             if(user != null)
             {
                 await _profileService.AddProfileAsync(user.Id, new ProfileCreateDto
@@ -103,6 +108,7 @@ namespace LinkedIn.Application.Services
             }
             var token = _jwtService.GenerateAccessToken(user);
             var refresh = _jwtService.GenerateRefreshToken(IpAddress);
+            var isEmailVerified = user.IsEmailVerified;
             user.refreshTokens.Add(refresh);
             await _userRepository.UpdateUserAsync(user);
 
@@ -110,12 +116,8 @@ namespace LinkedIn.Application.Services
             {
                 AccessToken = token,
                 RefreshToken = refresh.Token,
-                User = new UserReadDto
-                {
-                    Email = user.Email,
-                    Role = user.Role.ToString(),
-                    CreatedAt = user.CreatedAt
-                }
+                isEmailVerified = isEmailVerified,
+                User = _mapper.Map<UserReadDto>(user)
             };
 
         }
@@ -140,13 +142,40 @@ namespace LinkedIn.Application.Services
                 await _userRepository.UpdateUserAsync(user);
                 return new AuthResponseDto
                 {
+
                     AccessToken = newAccessToken,
                     RefreshToken = newRefreshToken.Token,
+                    isEmailVerified = user.IsEmailVerified,
                     User = _mapper.Map<UserReadDto>(user)
                 };
             
             
 
+
+
+        }
+
+        public async Task<AuthResponseDto> VerifyAndRefreshAsync(VerifyEmailDto dto)
+        {
+           var isVerified = await _userVerificationService.VerifyEmailAsync(dto);
+            if(!isVerified)
+            {
+                return null;
+            }
+            var user = await _userRepository.GetUserByEmailAsync(dto.Email);
+            if(user == null)
+            {
+                return null;
+            }
+            var token = _jwtService.GenerateAccessToken(user);
+            var activeRefreshToken = user.refreshTokens.LastOrDefault(t => t.Expires > DateTime.UtcNow)?.Token ?? "";
+            return new AuthResponseDto
+            {
+                AccessToken = token,
+                RefreshToken = activeRefreshToken,
+                isEmailVerified = user.IsEmailVerified,
+                User = _mapper.Map<UserReadDto>(user)
+            };
 
 
         }
