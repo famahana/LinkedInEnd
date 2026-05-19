@@ -11,7 +11,7 @@ namespace LinkedIn.Api.Controllers
     public class VerificationController(IUserVerificationService _verificationService,IUserService _userService) : ControllerBase
     {
         [HttpPost("verify")]
-        public async Task<IActionResult> VerifyEmail(VerifyEmailDto dto)
+        public async Task<IActionResult> VerifyEmail([FromBody]VerifyEmailDto dto)
         {
             var authResult = await _userService.VerifyAndRefreshAsync(dto);
             if (authResult == null)
