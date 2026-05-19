@@ -15,7 +15,7 @@ namespace LinkedIn.Application.Interfaces.Services
         Task<ICollection<UserReadDto>> GetAllUsersAsync();
         Task<UserReadDto> GetUserByIdAsync(Guid id);
         Task<UserReadDto> GetUserByEmailAsync(string email);
-        Task<string> AddUserAsync(UserCreateDto dto);
+        Task<AuthResponseDto> AddUserAsync(UserCreateDto dto);
         Task<string> DeleteUserByIdAsync(Guid id);
         Task<string> DeleteUserByEmailAsync(string email);
         Task<AuthResponseDto> LoginAsync(UserLoginDto dto,string IpAddress);

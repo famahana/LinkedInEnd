@@ -38,7 +38,7 @@ namespace LinkedIn.Application.Services
             
         }
 
-        public async Task<string> AddUserAsync(UserCreateDto dto)
+        public async Task<AuthResponseDto> AddUserAsync(UserCreateDto dto)
         {
             var entity = _mapper.Map<UserEntity>(dto);
             dto.Email = dto.Email.Trim();
@@ -59,7 +59,17 @@ namespace LinkedIn.Application.Services
                     Bio = ""
                     
                 });
-                return user.Email;
+                var token = _jwtService.GenerateAccessToken(user);
+                var refresh = _jwtService.GenerateRefreshToken("Registration");
+                user.refreshTokens.Add(refresh);
+                await _userRepository.UpdateUserAsync(user);
+                return new AuthResponseDto
+                {
+                    AccessToken = token,
+                    RefreshToken = refresh.Token,
+                    isEmailVerified = user.IsEmailVerified,
+                    User = _mapper.Map<UserReadDto>(user)
+                };
             }
             return null;
         }
